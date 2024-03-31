@@ -4,9 +4,7 @@ import com.jszg.loki_demo.app.data.CommonResult;
 import com.jszg.loki_demo.app.data.vo.LogTestVO;
 import com.jszg.loki_demo.app.service.GenerateLogsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @className generateLogs
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @Author wangyingcan
  * @DATE 2024/3/28 11:33
  */
+// @RestController直接返回HTTP响应体的JSON数据
+// @Controller返回的是视图，即页面
 @RestController
 @RequestMapping("/log")
 public class GenerateLogsController {
@@ -21,12 +21,17 @@ public class GenerateLogsController {
     @Autowired
     private GenerateLogsService generateLogsService;
 
+    /**
+       1.  http://localhost:8080/app?count=10  @GetMapping("/generateLogs")  @RequestParam("count") int count
+       2.  http://localhost:8080/app/10  @GetMapping("/generateLogs/{count}")  @PathVariable("count") int count
+     **/
     @GetMapping("/generateLogs")
-    public CommonResult<LogTestVO> generateLogs(){
-        // 1. 由于实现是死循环，所以很难用return来测试是否执行成功，因此用try-catch，其实这里也执行不到return（除非出现异常）
+    public CommonResult<LogTestVO> generateLogs(@RequestParam("count") int count){
+        // 1. 将死循环换成URL指定的日志产生条数
+        System.out.println("模拟产生日志条数："+count);
         try{
             // 1.1 执行成功则返回成功信息
-            generateLogsService.generateLogs();
+            generateLogsService.generateLogs(count);
             // 利用builder链式构造返回的VO对象
             LogTestVO logTestVO=LogTestVO.builder()
                     .status("success")

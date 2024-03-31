@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="5 seconds">
+    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="unknown"/>
+
+    <!-- 1.普通格式的日志打印   -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%-5level) %blue(%property{PID}) --- [%thread] %cyan(%-50logger{50}) : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--  2.JSON格式的日志打印（通过拦截器还可以获取到requestId、remoteIp信息）   -->
+    <appender name="PROD-STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC+8</timeZone>
+                </timestamp>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <!--  3.key决定日志显示字段名、不存在的属性不会打印（见上面属性）  -->
+                    <pattern>
+                        {
+                        "日志产生时间（timeStamp）": "%date{ISO8601}",
+                        "HTTP请求Id（requestId）": "%mdc{requestId}",
+                        "HTTP请求Ip（remoteIP）": "%mdc{remoteIp}",
+                        "日志级别（level）": "%level",
+                        "service": "${appName}",
+                        "pid": "${PID:-}",
+                        "trace": "%X{X-B3-TraceId:-}",
+                        "span": "%X{X-B3-SpanId:-}",
+                        "parent": "%X{X-B3-ParentSpanId:-}",
+                        "thread": "%thread",
+                        "class": "%logger{60}",
+                        "程序方法（method）": "%method",
+                        "程序行数（line）": "%line",
+                        "日志具体内容（message）": "#tryJson{%message}"
+                        }
+                    </pattern>
+                </pattern>
+                <!-- 4.异常堆栈信息打印  -->
+                <stackTrace>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>100</maxDepthPerThrowable>
+                        <maxLength>20480</maxLength>
+                        <rootCauseFirst>true</rootCauseFirst>
+                    </throwableConverter>
+                </stackTrace>
+            </providers>
+        </encoder>
+    </appender>
+
+
+    <!--  5.properties文件指定的环境  -->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="PROD-STDOUT"/>
+        </root>
+    </springProfile>
+
+</configuration>

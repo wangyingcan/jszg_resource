@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 public class generateLogsServiceImpl implements GenerateLogsService {
 
     @Override
-    public void generateLogs() {
+    public void generateLogs(int count) {
         // 循环打印日志信息，含随机
-        while(true) {
+        for(int i=0;i<=count;i++) {
             // 3.模拟获取战车当前的弹药量（0-9）、存活状态（10%死亡状态），之后可以换为真实数据
             boolean isAlive = true;
             int remainAmmunition = (int) (Math.random() * 10);

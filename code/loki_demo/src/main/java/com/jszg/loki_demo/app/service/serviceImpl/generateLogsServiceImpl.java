@@ -1,22 +1,22 @@
-package com.jszg.loki_demo.app.restful;
+package com.jszg.loki_demo.app.service.serviceImpl;
 
+import com.jszg.loki_demo.app.service.GenerateLogsService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 /**
- * @className generateLogs
+ * @className generateLogsImpl
  * @Description TODO
  * @Author wangyingcan
- * @DATE 2024/3/28 11:33
+ * @DATE 2024/3/31 14:43
  */
 @Slf4j
-public class generateLogs {
+@Service
+public class generateLogsServiceImpl implements GenerateLogsService {
 
-    // 1.定义日志输出对象，其中参数为当前类的类名
-    // public static final Logger LOGGER = LoggerFactory.getLogger(generateLogs.class);
-
-    // 2.循环打印日志信息，含随机
-    public static void main(String[] args) {
+    @Override
+    public void generateLogs() {
+        // 循环打印日志信息，含随机
         while(true) {
             // 3.模拟获取战车当前的弹药量（0-9）、存活状态（10%死亡状态），之后可以换为真实数据
             boolean isAlive = true;
@@ -48,7 +48,6 @@ public class generateLogs {
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
-
         }
     }
 }
